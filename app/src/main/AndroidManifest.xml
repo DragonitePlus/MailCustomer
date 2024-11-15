@@ -16,7 +16,7 @@
 
         <activity android:name="com.example.mailCustomer.HomeActivity"
             android:exported="true"
-            android:theme="@style/Theme.Design.Light">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
