@@ -13,7 +13,7 @@
     <string name="login_failed">登录失败，请检查您的邮箱和密码</string>
     <string name="email">邮箱</string>
     <string name="password">密码</string>
-    <string name="loading">加载中...</string>
+    <string name="loading">加载中…</string>
     <string name="to_hint">收件人</string>
     <string name="subject_hint">主题</string>
     <string name="body_hint">正文</string>

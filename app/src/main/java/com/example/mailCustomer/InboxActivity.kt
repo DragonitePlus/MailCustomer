@@ -1,147 +1,134 @@
 package com.example.mailCustomer
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.mailcostomer.R
-import com.qmuiteam.qmui.arch.QMUIActivity
-import com.qmuiteam.qmui.widget.QMUITopBarLayout
-import com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout
-import com.qmuiteam.qmui.widget.section.QMUISection
-import com.qmuiteam.qmui.widget.section.QMUIStickySectionAdapter
-import com.qmuiteam.qmui.widget.section.QMUIStickySectionLayout
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
-import javax.mail.*
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import java.net.HttpURLConnection
+import java.net.URL
 
-class InboxActivity : QMUIActivity() {
-    private lateinit var topBar: QMUITopBarLayout
-    private lateinit var pullRefreshLayout: QMUIPullRefreshLayout
-    private lateinit var sectionLayout: QMUIStickySectionLayout
-    private lateinit var adapter: EmailAdapter
-    private val emailList = mutableListOf<EmailItem>()
+class InboxActivity : AppCompatActivity() {
+    private lateinit var mailContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inbox)
 
-        topBar = findViewById(R.id.topbar)
-        topBar.setTitle(R.string.inbox)
-        topBar.addLeftBackImageButton().setOnClickListener { finish() }
-
-        pullRefreshLayout = findViewById(R.id.pullRefreshLayout)
-        pullRefreshLayout.setOnPullListener(object : QMUIPullRefreshLayout.OnPullListener {
-            override fun onMoveTarget(offset: Int) {}
-            override fun onMoveRefreshView(offset: Int) {}
-            override fun onRefresh() {
-                fetchEmails()
-            }
-        })
-
-        sectionLayout = findViewById(R.id.sectionLayout)
-        adapter = EmailAdapter()
-        sectionLayout.setAdapter(adapter)
-
+        mailContainer = findViewById(R.id.mailContainer)
         fetchEmails()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun fetchEmails() {
-        GlobalScope.launch(Dispatchers.IO) {
-            val props = Properties()
-            props["mail.pop3.host"] = "pop.example.com"
-            props["mail.pop3.port"] = "995"
-            props["mail.pop3.starttls.enable"] = "true"
-            val session = Session.getDefaultInstance(props)
-
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val store = session.getStore("pop3s")
-                store.connect("pop.example.com", "your_email@example.com", "your_password")
+                val url = URL("http://localhost:8080/emails") // 替换为实际的服务器URL
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connect()
 
-                val folder = store.getFolder("INBOX")
-                folder.open(Folder.READ_ONLY)
-
-                val messages = folder.messages
-                emailList.clear()
-                for (message in messages) {
-                    val subject = message.subject
-                    val from = message.from[0].toString()
-                    emailList.add(EmailItem(from, subject))
-                }
-
-                folder.close(false)
-                store.close()
-
-                runOnUiThread {
-                    adapter.setData(listOf(QMUISection(EmailHeader("Inbox"), emailList)))
-                    pullRefreshLayout.finishRefresh()
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val inputStream = connection.inputStream.bufferedReader().use { it.readText() }
+                    val emailArray = JSONArray(inputStream)
+                    withContext(Dispatchers.Main) {
+                        displayEmails(emailArray)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@InboxActivity, "Failed to fetch emails", Toast.LENGTH_SHORT).show()
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                runOnUiThread {
-                    pullRefreshLayout.finishRefresh()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@InboxActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    inner class EmailAdapter : QMUIStickySectionAdapter<EmailHeader, EmailItem, QMUIStickySectionAdapter.ViewHolder>() {
+    private fun displayEmails(emailArray: JSONArray) {
+        for (i in 0 until emailArray.length()) {
+            val email = emailArray.getJSONObject(i)
+            val senderEmail = email.getString("sender")
+            val title = email.getString("title")
 
-        override fun onCreateSectionHeaderViewHolder(viewGroup: ViewGroup): ViewHolder {
-            val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_section_header, viewGroup, false)
-            return SectionHeaderViewHolder(view)
+            val emailView = TextView(this).apply {
+                text = title
+                textSize = 18f
+                setPadding(16, 16, 16, 16)
+                setOnClickListener {
+                    fetchEmailContentAndOpenDetail(senderEmail, title)
+                }
+            }
+
+            mailContainer.addView(emailView)
         }
-
-        override fun onCreateSectionItemViewHolder(viewGroup: ViewGroup): ViewHolder {
-            val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_email, viewGroup, false)
-            return EmailViewHolder(view)
-        }
-
-        override fun onCreateSectionLoadingViewHolder(viewGroup: ViewGroup): ViewHolder {
-            // 创建用于加载视图的 ViewHolder
-            val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_loading, viewGroup, false)
-            return LoadingViewHolder(view)
-        }
-
-        // 创建 LoadingViewHolder 类
-        inner class LoadingViewHolder(itemView: View) : ViewHolder(itemView)
-
-        override fun onCreateCustomItemViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
-            TODO("Not yet implemented")
-        }
-
-        override fun onBindSectionHeader(holder: ViewHolder, position: Int, section: QMUISection<EmailHeader, EmailItem>) {
-            val headerHolder = holder as SectionHeaderViewHolder
-            headerHolder.titleTextView.text = section.header.title
-        }
-
-
-        inner class SectionHeaderViewHolder(itemView: View) : QMUIStickySectionAdapter.ViewHolder(itemView) {
-            val titleTextView: TextView = itemView.findViewById(R.id.headerTitleTextView)
-        }
-
-        inner class EmailViewHolder(itemView: View) : QMUIStickySectionAdapter.ViewHolder(itemView) {
-            val fromTextView: TextView = itemView.findViewById(R.id.fromTextView)
-            val subjectTextView: TextView = itemView.findViewById(R.id.subjectTextView)
-        }
-
     }
 
+    private fun fetchEmailContentAndOpenDetail(senderEmail: String, title: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // 使用 POP3 连接获取邮件正文（需使用第三方库如 `javax.mail`）
+                // 假设服务器 POP3 相关设置如下：
+                // POP3 服务器地址：pop.example.com
+                // 用户名和密码需要通过安全存储方式获取
 
-    data class EmailHeader(val title: String) : QMUISection.Model<EmailHeader> {
-        override fun cloneForDiff(): EmailHeader = copy()
-        override fun isSameItem(other: EmailHeader): Boolean = title == other.title
-        override fun isSameContent(other: EmailHeader): Boolean = this == other
+                val pop3Host = "pop.example.com"
+                val username = "your_email@example.com"
+                val password = "your_password"
+
+                val properties = System.getProperties()
+                properties.setProperty("mail.pop3.host", pop3Host)
+                properties.setProperty("mail.pop3.port", "110") // 或 "995" (SSL)
+                properties.setProperty("mail.pop3.starttls.enable", "true")
+
+                val session = javax.mail.Session.getDefaultInstance(properties)
+                val store = session.getStore("pop3")
+                store.connect(pop3Host, username, password)
+
+                val inbox = store.getFolder("INBOX")
+                inbox.open(javax.mail.Folder.READ_ONLY)
+
+                val messages = inbox.messages.filter {
+                    it.subject == title // 查找匹配标题的邮件
+                }
+
+                if (messages.isNotEmpty()) {
+                    val message = messages[0] // 假设只有一封匹配的邮件
+                    val content = message.content.toString()
+
+                    withContext(Dispatchers.Main) {
+                        openEmailDetail(senderEmail, title, content)
+                    }
+                }
+
+                inbox.close(false)
+                store.close()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@InboxActivity, "Failed to fetch email content", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
-    data class EmailItem(val from: String, val subject: String) : QMUISection.Model<EmailItem> {
-        override fun cloneForDiff(): EmailItem = copy()
-        override fun isSameItem(other: EmailItem): Boolean = from == other.from && subject == other.subject
-        override fun isSameContent(other: EmailItem): Boolean = this == other
+    private fun openEmailDetail(senderEmail: String, title: String, content: String) {
+        val intent = Intent(this, EmailDetailActivity::class.java).apply {
+            putExtra("senderEmail", senderEmail)
+            putExtra("title", title)
+            putExtra("content", content)
+        }
+        startActivity(intent)
     }
 }

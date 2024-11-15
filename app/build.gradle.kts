@@ -46,8 +46,9 @@ android {
 
 dependencies {
 
-    implementation("com.qmuiteam:qmui:2.0.0-alpha10")
-    implementation("com.qmuiteam:arch:2.0.0-alpha10")
+    implementation("com.qmuiteam:qmui:2.0.1")
+    implementation("com.qmuiteam:arch:2.0.1")
+
 
     implementation(libs.squareup.okhttp)
     //邮件

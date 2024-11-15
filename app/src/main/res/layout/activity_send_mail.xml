@@ -6,29 +6,25 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/username"
+        android:id="@+id/recipientEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
-        android:inputType="text" />
+        android:hint="收件人邮箱"
+        android:inputType="textEmailAddress" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/emailContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        android:hint="邮件内容"
+        android:inputType="textMultiLine"
+        android:gravity="top"
+        android:minHeight="200dp" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/sendButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login" />
-
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register"
+        android:text="发送邮件"
         android:layout_marginTop="16dp" />
 </LinearLayout>

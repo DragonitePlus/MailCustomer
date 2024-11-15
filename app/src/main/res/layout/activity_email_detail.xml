@@ -5,30 +5,26 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/username"
+    <TextView
+        android:id="@+id/senderEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
-        android:inputType="text" />
+        android:textSize="18sp"
+        android:text="Sender: " />
 
-    <EditText
-        android:id="@+id/password"
+    <TextView
+        android:id="@+id/emailTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"
+        android:text="Title: " />
 
-    <Button
-        android:id="@+id/loginButton"
+    <TextView
+        android:id="@+id/emailContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login" />
-
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        android:layout_marginTop="16dp" />
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:text="Content: " />
 </LinearLayout>

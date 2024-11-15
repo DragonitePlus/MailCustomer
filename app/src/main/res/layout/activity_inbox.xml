@@ -4,21 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.qmuiteam.qmui.widget.QMUITopBarLayout
-        android:id="@+id/topbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout
-        android:id="@+id/pullRefreshLayout"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.qmuiteam.qmui.widget.section.QMUIStickySectionLayout
-            android:id="@+id/sectionLayout"
+        <LinearLayout
+            android:id="@+id/mailContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout>
-
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </LinearLayout>
