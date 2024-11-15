@@ -12,6 +12,7 @@ import com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout
 import com.qmuiteam.qmui.widget.section.QMUISection
 import com.qmuiteam.qmui.widget.section.QMUIStickySectionAdapter
 import com.qmuiteam.qmui.widget.section.QMUIStickySectionLayout
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -49,6 +50,7 @@ class InboxActivity : QMUIActivity() {
         fetchEmails()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun fetchEmails() {
         GlobalScope.launch(Dispatchers.IO) {
             val props = Properties()
@@ -76,7 +78,7 @@ class InboxActivity : QMUIActivity() {
                 store.close()
 
                 runOnUiThread {
-                    adapter.setData(createSections())
+                    adapter.setData(listOf(QMUISection(EmailHeader("Inbox"), emailList)))
                     pullRefreshLayout.finishRefresh()
                 }
             } catch (e: Exception) {
@@ -88,57 +90,58 @@ class InboxActivity : QMUIActivity() {
         }
     }
 
-    private fun createSections(): List<QMUISection<EmailItem, EmailItem>> {
-        val section = QMUISection(EmailItem("Header", "Emails"), emailList)
-        return listOf(section)
-    }
+    inner class EmailAdapter : QMUIStickySectionAdapter<EmailHeader, EmailItem, QMUIStickySectionAdapter.ViewHolder>() {
 
-    inner class EmailAdapter : QMUIStickySectionAdapter<EmailItem, EmailItem, EmailAdapter.EmailViewHolder>() {
-
-        inner class EmailViewHolder(itemView: View) : ViewHolder(itemView) {
-            val fromTextView: TextView = itemView.findViewById(R.id.fromTextView)
-            val subjectTextView: TextView = itemView.findViewById(R.id.subjectTextView)
+        override fun onCreateSectionHeaderViewHolder(viewGroup: ViewGroup): ViewHolder {
+            val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_section_header, viewGroup, false)
+            return SectionHeaderViewHolder(view)
         }
 
-        override fun onCreateSectionHeaderViewHolder(parent: ViewGroup): EmailViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_email, parent, false)
-            return EmailViewHolder(view)
-        }
-
-        override fun onCreateSectionItemViewHolder(parent: ViewGroup): EmailViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_email, parent, false)
-            return EmailViewHolder(view)
-        }
-
-        override fun onCreateSectionLoadingViewHolder(viewGroup: ViewGroup): EmailViewHolder {
+        override fun onCreateSectionItemViewHolder(viewGroup: ViewGroup): ViewHolder {
             val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_email, viewGroup, false)
             return EmailViewHolder(view)
         }
 
-        override fun onCreateCustomItemViewHolder(
-            viewGroup: ViewGroup,
-            type: Int
-        ): EmailViewHolder {
-            return EmailViewHolder(viewGroup)
+        override fun onCreateSectionLoadingViewHolder(viewGroup: ViewGroup): ViewHolder {
+            // 创建用于加载视图的 ViewHolder
+            val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_loading, viewGroup, false)
+            return LoadingViewHolder(view)
         }
 
-        override fun onBindSectionHeader(holder: EmailViewHolder, sectionIndex: Int, section: QMUISection<EmailItem, EmailItem>) {
-            // 绑定标题项内容
+        // 创建 LoadingViewHolder 类
+        inner class LoadingViewHolder(itemView: View) : ViewHolder(itemView)
+
+        override fun onCreateCustomItemViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
+            TODO("Not yet implemented")
         }
+
+        override fun onBindSectionHeader(holder: ViewHolder, position: Int, section: QMUISection<EmailHeader, EmailItem>) {
+            val headerHolder = holder as SectionHeaderViewHolder
+            headerHolder.titleTextView.text = section.header.title
+        }
+
+
+        inner class SectionHeaderViewHolder(itemView: View) : QMUIStickySectionAdapter.ViewHolder(itemView) {
+            val titleTextView: TextView = itemView.findViewById(R.id.headerTitleTextView)
+        }
+
+        inner class EmailViewHolder(itemView: View) : QMUIStickySectionAdapter.ViewHolder(itemView) {
+            val fromTextView: TextView = itemView.findViewById(R.id.fromTextView)
+            val subjectTextView: TextView = itemView.findViewById(R.id.subjectTextView)
+        }
+
+    }
+
+
+    data class EmailHeader(val title: String) : QMUISection.Model<EmailHeader> {
+        override fun cloneForDiff(): EmailHeader = copy()
+        override fun isSameItem(other: EmailHeader): Boolean = title == other.title
+        override fun isSameContent(other: EmailHeader): Boolean = this == other
     }
 
     data class EmailItem(val from: String, val subject: String) : QMUISection.Model<EmailItem> {
-
-        override fun isSameItem(other: EmailItem): Boolean {
-            return this.from == other.from && this.subject == other.subject
-        }
-
-        override fun cloneForDiff(): EmailItem {
-            return this.copy() // 使用 Kotlin 的 `copy()` 方法进行克隆
-        }
-
-        override fun isSameContent(other: EmailItem?): Boolean {
-            return this == other
-        }
+        override fun cloneForDiff(): EmailItem = copy()
+        override fun isSameItem(other: EmailItem): Boolean = from == other.from && subject == other.subject
+        override fun isSameContent(other: EmailItem): Boolean = this == other
     }
 }

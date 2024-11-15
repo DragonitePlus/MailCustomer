@@ -1,44 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
     <com.qmuiteam.qmui.widget.QMUITopBarLayout
         android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/toEditText"
+    <com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView
+        android:id="@+id/groupListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:hint="To"
-        android:inputType="textEmailAddress"
-        android:minHeight="48dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-    <EditText
-        android:id="@+id/subjectEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:hint="Subject"
-        android:minHeight="48dp" />
-
-    <EditText
-        android:id="@+id/bodyEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Body"
-        android:inputType="textMultiLine"
-        android:minLines="5"
-        android:gravity="top"
-        android:layout_marginBottom="16dp" />
-
-    <Button
+    <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
         android:id="@+id/sendButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send" />
+        android:layout_margin="16dp"
+        android:text="@string/send" />
+
 </LinearLayout>

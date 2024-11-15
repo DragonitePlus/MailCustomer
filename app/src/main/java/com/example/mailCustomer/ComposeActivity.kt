@@ -1,47 +1,63 @@
 package com.example.mailCustomer
 
 import android.os.Bundle
-import android.widget.Button
+import android.view.View
 import android.widget.EditText
 import com.example.mailcostomer.R
 import com.qmuiteam.qmui.arch.QMUIActivity
 import com.qmuiteam.qmui.widget.QMUITopBarLayout
+import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog
+import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
+import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.Properties
-import javax.mail.Authenticator
-import javax.mail.Message
-import javax.mail.MessagingException
-import javax.mail.PasswordAuthentication
-import javax.mail.Session
-import javax.mail.Transport
+import java.util.*
+import javax.mail.*
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
 class ComposeActivity : QMUIActivity() {
     private lateinit var topBar: QMUITopBarLayout
+    private lateinit var groupListView: QMUIGroupListView
+    private lateinit var sendButton: QMUIRoundButton
     private lateinit var toEditText: EditText
     private lateinit var subjectEditText: EditText
     private lateinit var bodyEditText: EditText
-    private lateinit var sendButton: Button
+
+    private fun createGroupListItemView(title: String, editText: EditText): QMUICommonListItemView {
+        val itemView = groupListView.createItemView(title)
+        itemView.accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM
+        // 设置 `EditText` 为 `itemView` 的子视图
+        itemView.addView(editText)
+        return itemView
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compose)
 
-        // 初始化顶部栏
         topBar = findViewById(R.id.topbar)
         topBar.setTitle(R.string.compose)
         topBar.addLeftBackImageButton().setOnClickListener { finish() }
 
-        // 初始化输入字段
-        toEditText = findViewById(R.id.toEditText)
-        subjectEditText = findViewById(R.id.subjectEditText)
-        bodyEditText = findViewById(R.id.bodyEditText)
-        sendButton = findViewById(R.id.sendButton)
+        groupListView = findViewById(R.id.groupListView)
+        val section = QMUIGroupListView.newSection(this)
 
+        toEditText = EditText(this)
+        subjectEditText = EditText(this)
+        bodyEditText = EditText(this)
+
+        // 使用 `addItemView` 方法添加视图
+        section.addItemView(createGroupListItemView(getString(R.string.to), toEditText), null)
+        section.addItemView(createGroupListItemView(getString(R.string.subject), subjectEditText), null)
+        section.addItemView(createGroupListItemView(getString(R.string.body), bodyEditText), null)
+
+        section.addTo(groupListView)
+
+        sendButton = findViewById(R.id.sendButton)
         sendButton.setOnClickListener {
             val to = toEditText.text.toString()
             val subject = subjectEditText.text.toString()
@@ -50,6 +66,7 @@ class ComposeActivity : QMUIActivity() {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun sendEmail(to: String, subject: String, body: String) {
         val loadingDialog = QMUITipDialog.Builder(this)
             .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
@@ -58,12 +75,11 @@ class ComposeActivity : QMUIActivity() {
         loadingDialog.show()
 
         GlobalScope.launch(Dispatchers.IO) {
-            val props = Properties().apply {
-                put("mail.smtp.host", "smtp.example.com")
-                put("mail.smtp.port", "587")
-                put("mail.smtp.auth", "true")
-                put("mail.smtp.starttls.enable", "true")
-            }
+            val props = Properties()
+            props["mail.smtp.host"] = "smtp.example.com"
+            props["mail.smtp.port"] = "587"
+            props["mail.smtp.auth"] = "true"
+            props["mail.smtp.starttls.enable"] = "true"
 
             val session = Session.getInstance(props, object : Authenticator() {
                 override fun getPasswordAuthentication(): PasswordAuthentication {
@@ -72,12 +88,11 @@ class ComposeActivity : QMUIActivity() {
             })
 
             try {
-                val message = MimeMessage(session).apply {
-                    setFrom(InternetAddress("your_email@example.com"))
-                    setRecipients(Message.RecipientType.TO, InternetAddress.parse(to))
-                    this.subject = subject
-                    setText(body)
-                }
+                val message = MimeMessage(session)
+                message.setFrom(InternetAddress("your_email@example.com"))
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to))
+                message.subject = subject
+                message.setText(body)
 
                 Transport.send(message)
 
@@ -104,4 +119,3 @@ class ComposeActivity : QMUIActivity() {
         }
     }
 }
-
