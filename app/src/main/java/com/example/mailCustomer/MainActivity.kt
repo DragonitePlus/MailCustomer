@@ -1,5 +1,6 @@
 package com.example.mailCustomer
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mailcostomer.R
 import okhttp3.*
+import org.json.JSONObject
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -50,24 +52,40 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         val request = Request.Builder()
-            .url("http://localhost:8080/login")
+            .url("https://localhost:8080/login") // 使用 HTTPS
             .post(formBody)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Network Error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Network Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val intent = Intent(this@MainActivity, HomeActivity::class.java)
-                    startActivity(intent)
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this@MainActivity, "Login Failed", Toast.LENGTH_SHORT).show()
+                response.use {
+                    if (it.isSuccessful) {
+                        val responseBody = it.body?.string()
+                        if (responseBody != null) {
+                            val jsonObject = JSONObject(responseBody)
+                            val token = jsonObject.getString("token")
+
+                            // Save token to SharedPreferences
+                            val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                            sharedPreferences.edit().putString("auth_token", token).apply()
+
+                            runOnUiThread {
+                                Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@MainActivity, HomeActivity::class.java)
+                                startActivity(intent)
+                                finish() // Optional: Prevent returning to the login screen
+                            }
+                        }
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(this@MainActivity, "Login Failed: ${response.message}", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

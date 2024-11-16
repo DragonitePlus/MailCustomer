@@ -53,12 +53,15 @@ class SendMailActivity : AppCompatActivity() {
         val props = Properties()
         props["mail.smtp.auth"] = "true"
         props["mail.smtp.starttls.enable"] = "true"
-        props["mail.smtp.host"] = "smtp.example.com" // 请提供SMTP服务器地址
-        props["mail.smtp.port"] = "587" // 常用端口为587或465
+        props["mail.smtp.host"] = "smtp.163.com" // 请提供SMTP服务器地址
+        props["mail.smtp.port"] = "465" // 常用端口为587或465
+        props["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
+        props["mail.smtp.socketFactory.fallback"] = "false"
+
 
         // 请提供以下信息
-        val username = "your_email@example.com" // 发件人邮箱地址
-        val password = "your_email_password" // 发件人邮箱密码或应用专用密码
+        val username = "t1740084968@163.com" // 发件人邮箱地址
+        val password = "ATSTcmxMFDJRtw7R" // 发件人邮箱密码或应用专用密码
 
         // 创建一个新的线程来发送邮件
     CoroutineScope(Dispatchers.IO).launch {
