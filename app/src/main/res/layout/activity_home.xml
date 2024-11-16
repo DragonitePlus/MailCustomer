@@ -8,16 +8,6 @@
     android:padding="16dp"
     tools:context="com.example.mailCustomer.HomeActivity">
 
-    <!-- 顶栏 -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/cardview_dark_background"
-        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar.Primary"
-        app:title="邮箱"
-        app:navigationIcon="@drawable/ic_arrow_back" />
-
     <!-- 收件箱卡片 -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/inboxBlock"
