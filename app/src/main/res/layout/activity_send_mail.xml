@@ -13,7 +13,7 @@
         android:background="@color/cardview_dark_background"
         android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar.Primary"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="邮箱" />
+        app:title="发送邮件" />
 
 
     <LinearLayout

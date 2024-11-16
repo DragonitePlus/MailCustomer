@@ -26,6 +26,7 @@
         <activity android:name="com.example.mailCustomer.RegisterActivity" />
         <activity android:name="com.example.mailCustomer.InboxActivity" />
         <activity android:name="com.example.mailCustomer.SendMailActivity" />
+        <activity android:name="com.example.mailCustomer.EmailDetailActivity" />
     </application>
 
 </manifest>

@@ -1,13 +1,12 @@
 package com.example.mailCustomer
 
-import android.content.Intent
-import com.example.mailcostomer.R
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mailcostomer.R
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +25,7 @@ class SendMailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send_mail)
 
-        val backArrow = findViewById<MaterialToolbar>(R.id.toolbar)
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         val recipientEmail = findViewById<EditText>(R.id.recipientEmail)
         val emailContent = findViewById<EditText>(R.id.emailMessage)
         val sendButton = findViewById<Button>(R.id.sendButton)
@@ -42,9 +41,8 @@ class SendMailActivity : AppCompatActivity() {
             }
         }
 
-        backArrow.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
+        toolbar.setNavigationOnClickListener {
+            finish() // 返回上一页面
         }
     }
 
