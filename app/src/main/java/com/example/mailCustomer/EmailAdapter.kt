@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mailcostomer.R
 
 class EmailAdapter(
-    private val emails: List<Email>,
+    private var emails: List<Email>, // 改为可变变量
     private val onClick: (Email) -> Unit
 ) : RecyclerView.Adapter<EmailAdapter.EmailViewHolder>() {
 
@@ -31,5 +31,10 @@ class EmailAdapter(
         val senderView: TextView = view.findViewById(R.id.senderView)
         val titleView: TextView = view.findViewById(R.id.titleView)
         val cardView: CardView = view.findViewById(R.id.cardView)
+    }
+
+    fun updateEmails(newEmails: List<Email>) {
+        this.emails = newEmails
+        notifyDataSetChanged()
     }
 }

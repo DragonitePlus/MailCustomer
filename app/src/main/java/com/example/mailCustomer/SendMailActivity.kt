@@ -27,15 +27,17 @@ class SendMailActivity : AppCompatActivity() {
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         val recipientEmail = findViewById<EditText>(R.id.recipientEmail)
+        val emailTitle = findViewById<EditText>(R.id.emailTitle)
         val emailContent = findViewById<EditText>(R.id.emailMessage)
         val sendButton = findViewById<Button>(R.id.sendButton)
 
         sendButton.setOnClickListener {
             val recipient = recipientEmail.text.toString().trim()
+            val title = emailTitle.text.toString().trim()
             val content = emailContent.text.toString().trim()
 
-            if (recipient.isNotEmpty() && content.isNotEmpty()) {
-                sendEmail(recipient, content)
+            if (recipient.isNotEmpty() && title.isNotEmpty() && content.isNotEmpty()) {
+                sendEmail(recipient, title,  content)
             } else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
@@ -46,15 +48,13 @@ class SendMailActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendEmail(recipient: String, content: String) {
+    private fun sendEmail(recipient: String, title:String, content: String) {
         // Configure SMTP properties
         val props = Properties()
         props["mail.smtp.auth"] = "true"
-        props["mail.smtp.starttls.enable"] = "true"
-        props["mail.smtp.host"] = "smtp.163.com" // 请提供SMTP服务器地址
-        props["mail.smtp.port"] = "465" // 常用端口为587或465
         props["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
-        props["mail.smtp.socketFactory.fallback"] = "false"
+        props["mail.smtp.host"] = "smtp.163.com" // 163邮箱的SMTP服务器地址
+        props["mail.smtp.port"] = "465" // 163邮箱的SSL加密端口
 
 
         // 请提供以下信息
@@ -73,7 +73,7 @@ class SendMailActivity : AppCompatActivity() {
             val message = MimeMessage(session).apply {
                 setFrom(InternetAddress(username))
                 setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient))
-                subject = "Test Email from Android App"
+                subject = title
                 setText(content)
             }
 
@@ -84,18 +84,18 @@ class SendMailActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             runOnUiThread {
-                showResendDialog(recipient, content)
+                showResendDialog(recipient, title, content)
             }
         }
     }
 }
 
-private fun showResendDialog(recipient: String, content: String) {
+private fun showResendDialog(recipient: String,title: String, content: String) {
     val builder = AlertDialog.Builder(this)
     builder.setTitle("Failed to send email")
     builder.setMessage("There was an error sending the email. Do you want to try again?")
     builder.setPositiveButton("Retry") { _, _ ->
-        sendEmail(recipient, content)
+        sendEmail(recipient, title, content)
     }
     builder.setNegativeButton("Cancel") { dialog, _ ->
         dialog.dismiss()
