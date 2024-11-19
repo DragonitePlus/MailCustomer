@@ -23,12 +23,12 @@ class InboxViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    fun fetchEmails(credentials: Pair<String, String>) {
+    fun fetchEmails(credentials: String) {
         _isLoading.value = true
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val (username, password) = credentials
-                if (username.isEmpty() || password.isEmpty()) {
+                val username = credentials
+                if (username.isEmpty()) {
                     withContext(Dispatchers.Main) {
                         _errorMessage.value = "Email credentials not found"
                     }
@@ -43,7 +43,7 @@ class InboxViewModel : ViewModel() {
 
                 val session = Session.getInstance(props, null)
                 val store = session.getStore("pop3")
-                store.connect("10.0.2.2", username, password)
+                store.connect("10.0.2.2", username)
 
                 val inbox = store.getFolder("INBOX")
                 inbox.open(Folder.READ_ONLY)
@@ -52,10 +52,6 @@ class InboxViewModel : ViewModel() {
                 Log.d("InboxViewModel", "Total messages: ${messages.size}")
                 println(messages.toString());
                 val fetchedEmails = messages.map { message ->
-    Log.d("InboxViewModel", "Processing message from: ${message.from?.joinToString { it.toString() }}")
-    Log.d("InboxViewModel", "Message subject: ${message.subject}")
-    Log.d("InboxViewModel", "Message content type: ${message.contentType}")
-                    Log.d("InboxViewModel", "Message content: ${message.content}")
                     val sender = if (message.from != null && message.from.isNotEmpty()) {
                         extractEmailAddress(message.from[0].toString())
                     } else {

@@ -28,6 +28,7 @@ xui = "1.2.0"
 xuiLibVersion = "1.2.0"
 xuiVersion = "1.2.1"
 xutil = "2.0.0"
+firebaseCrashlyticsBuildtools = "3.0.2"
 
 [libraries]
 android-activation = { module = "com.sun.mail:android-activation", version.ref = "androidActivation" }
@@ -64,6 +65,7 @@ squareup-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "squar
 xui-v121 = { module = "com.github.xuexiangjys:XUI", version.ref = "xuiVersion" }
 xutil = { module = "com.github.xuexiangjys:XUtil", version.ref = "xutil" }
 xui = { module = "com.github.xuexiangjys:XUI", version.ref = "xui" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

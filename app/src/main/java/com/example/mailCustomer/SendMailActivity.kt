@@ -1,6 +1,8 @@
 package com.example.mailCustomer
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -8,6 +10,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mailcostomer.R
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,14 +36,21 @@ class SendMailActivity : AppCompatActivity() {
         val emailContent = findViewById<EditText>(R.id.emailMessage)
         val sendButton = findViewById<Button>(R.id.sendButton)
 
+        // 获取 username 作为 sender
+        val sender = getUsernameFromToken() + "@example.com"
+        senderEmail.setText(sender)
+
         sendButton.setOnClickListener {
-            val sender = senderEmail.text.toString().trim()
             val recipient = recipientEmail.text.toString().trim()
             val title = emailTitle.text.toString().trim()
             val content = emailContent.text.toString().trim()
 
             if (recipient.isNotEmpty() && title.isNotEmpty() && content.isNotEmpty()) {
-                sendEmail(sender, recipient, title, content)
+                sender?.let {
+                    sendEmail(it, recipient, title, content)
+                } ?: run {
+                    Toast.makeText(this, "Failed to retrieve sender email from token", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
@@ -99,5 +111,38 @@ class SendMailActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         builder.create().show()
+    }
+
+    private fun getUsernameFromToken(): String? {
+        val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("auth_token", null)
+        return token?.let { decodeToken(it)?.get("sub") as? String }
+    }
+
+    private fun decodeToken(token: String): Map<String, Any>? {
+        try {
+            val parts = token.split("\\.".toRegex())
+            if (parts.size != 3) {
+                return null
+            }
+
+            val payload = parts[1]
+            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE)
+            val decodedString = String(decodedBytes, Charsets.UTF_8)
+
+            return jsonToMap(decodedString)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
+    private fun jsonToMap(jsonString: String): Map<String, Any> {
+        return try {
+            val mapType = object : TypeToken<Map<String, Any>>() {}.type
+            Gson().fromJson(jsonString, mapType)
+        } catch (e: JsonSyntaxException) {
+            emptyMap()
+        }
     }
 }

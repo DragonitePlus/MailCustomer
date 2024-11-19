@@ -46,6 +46,7 @@ android {
 
 dependencies {
     implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.code.gson:gson:2.8.9")// 或者使用最新版本
 
     implementation(libs.squareup.okhttp)
     //邮件
@@ -63,6 +64,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.viewpager2)
     implementation(libs.car.ui.lib)
+    implementation(libs.firebase.crashlytics.buildtools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

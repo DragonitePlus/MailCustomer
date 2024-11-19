@@ -27,7 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="发送方邮箱"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:editable="false"
+            android:focusable="false"
+            android:clickable="false"
+            android:longClickable="false" />
+
 
         <EditText
             android:id="@+id/recipientEmail"
