@@ -38,7 +38,7 @@ class InboxViewModel : ViewModel() {
                 val props = Properties().apply {
                     put("mail.store.protocol", "pop3")
                     put("mail.pop3.host", "10.0.2.2")
-                    put("mail.pop3.port", "1110")
+                    put("mail.pop3.port", "1100")
                 }
 
                 val session = Session.getInstance(props, null)
@@ -48,13 +48,24 @@ class InboxViewModel : ViewModel() {
                 val inbox = store.getFolder("INBOX")
                 inbox.open(Folder.READ_ONLY)
 
-                val messages = inbox.messages
+                 val messages = inbox.messages
+                Log.d("InboxViewModel", "Total messages: ${messages.size}")
+                println(messages.toString());
                 val fetchedEmails = messages.map { message ->
-                    val sender = extractEmailAddress(message.from[0].toString())
+    Log.d("InboxViewModel", "Processing message from: ${message.from?.joinToString { it.toString() }}")
+    Log.d("InboxViewModel", "Message subject: ${message.subject}")
+    Log.d("InboxViewModel", "Message content type: ${message.contentType}")
+                    Log.d("InboxViewModel", "Message content: ${message.content}")
+                    val sender = if (message.from != null && message.from.isNotEmpty()) {
+                        extractEmailAddress(message.from[0].toString())
+                    } else {
+                        "Unknown"
+                    }
                     val title = message.subject
                     val contentPreview = extractContentPreview(message.content)
                     Email(sender, title, contentPreview)
                 }
+
 
                 withContext(Dispatchers.Main) {
                     _emailList.value = fetchedEmails

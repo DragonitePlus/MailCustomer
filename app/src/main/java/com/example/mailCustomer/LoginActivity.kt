@@ -85,8 +85,8 @@ class LoginActivity : AppCompatActivity() {
                                 Log.e("LoginActivity", "Received HTML response instead of JSON\nResponse Body: $responseBody")
                             } else {
                                 val jsonObject = JSONObject(responseBody)
-                                if (jsonObject.has("token")) {
-                                    val token = jsonObject.getString("token")
+                                if (jsonObject.has("token")) { // 修改这里
+                                    val token = jsonObject.getString("token") // 修改这里
 
                                     // Save token, username, and password to SharedPreferences
                                     val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -130,6 +130,7 @@ class LoginActivity : AppCompatActivity() {
         }
     })
 }
+
 
 }
 

@@ -53,6 +53,7 @@ class RegisterActivity : AppCompatActivity() {
     val json = """
         {
             "username": "$username",
+            "email": "$username@example.com",
             "password": "$password"
         }
     """.trimIndent()

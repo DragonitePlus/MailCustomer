@@ -1,6 +1,5 @@
 package com.example.mailCustomer
 
-import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -14,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Properties
 import javax.mail.Message
-import javax.mail.PasswordAuthentication
 import javax.mail.Session
 import javax.mail.Transport
 import javax.mail.internet.InternetAddress
@@ -27,18 +25,20 @@ class SendMailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_send_mail)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        val senderEmail = findViewById<EditText>(R.id.senderEmail)
         val recipientEmail = findViewById<EditText>(R.id.recipientEmail)
         val emailTitle = findViewById<EditText>(R.id.emailTitle)
         val emailContent = findViewById<EditText>(R.id.emailMessage)
         val sendButton = findViewById<Button>(R.id.sendButton)
 
         sendButton.setOnClickListener {
+            val sender = senderEmail.text.toString().trim()
             val recipient = recipientEmail.text.toString().trim()
             val title = emailTitle.text.toString().trim()
             val content = emailContent.text.toString().trim()
 
             if (recipient.isNotEmpty() && title.isNotEmpty() && content.isNotEmpty()) {
-                sendEmail(recipient, title, content)
+                sendEmail(sender, recipient, title, content)
             } else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
@@ -49,32 +49,30 @@ class SendMailActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendEmail(recipient: String, title: String, content: String) {
+    private fun sendEmail(sender: String, recipient: String, title: String, content: String) {
+        // 打印调试信息
+        println("Sender: $sender")
+        println("Recipient: $recipient")
+        println("Title: $title")
+        println("Content: $content")
+
         // Configure SMTP properties
         val props = Properties()
-        props["mail.smtp.auth"] = "true"
+        props["mail.smtp.auth"] = "false"
         props["mail.smtp.host"] = "10.0.2.2"
         props["mail.smtp.port"] = "2525"
-
-        // Read the saved username from SharedPreferences
-        val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString("username", "") ?: ""
-        val password = "sender" // 发件人邮箱密码或应用专用密码
 
         // Create a new coroutine to send the email
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val session = Session.getInstance(props, object : javax.mail.Authenticator() {
-                    override fun getPasswordAuthentication(): PasswordAuthentication {
-                        return PasswordAuthentication(username, password)
-                    }
-                })
+                val session = Session.getInstance(props)
 
                 val message = MimeMessage(session).apply {
-                    setFrom(InternetAddress(username))
+                    setFrom(InternetAddress(sender))
                     setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient))
-                    subject = title
-                    setText(content)
+                    setSubject(title)
+                    // 使用 setText 方法设置内容
+                    setText(content, "UTF-8")
                 }
 
                 Transport.send(message)
@@ -84,18 +82,18 @@ class SendMailActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 runOnUiThread {
-                    showResendDialog(recipient, title, content)
+                    showResendDialog(sender, recipient, title, content)
                 }
             }
         }
     }
 
-    private fun showResendDialog(recipient: String, title: String, content: String) {
+    private fun showResendDialog(sender: String, recipient: String, title: String, content: String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Failed to send email")
         builder.setMessage("There was an error sending the email. Do you want to try again?")
         builder.setPositiveButton("Retry") { _, _ ->
-            sendEmail(recipient, title, content)
+            sendEmail(sender, recipient, title, content)
         }
         builder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()

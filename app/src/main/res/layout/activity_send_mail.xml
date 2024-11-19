@@ -23,6 +23,13 @@
         android:padding="16dp">
 
         <EditText
+            android:id="@+id/senderEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="发送方邮箱"
+            android:inputType="textEmailAddress" />
+
+        <EditText
             android:id="@+id/recipientEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
