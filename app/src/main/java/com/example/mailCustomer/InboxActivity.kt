@@ -70,8 +70,8 @@ class InboxActivity : AppCompatActivity() {
 
     private fun getEmailCredentials(): Pair<String, String> {
         val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString("email_username", "t1740084968@163.com")
-        val password = sharedPreferences.getString("email_password", "ATSTcmxMFDJRtw7R")
+        val username = sharedPreferences.getString("email_username", "receiver@example.com")
+        val password = sharedPreferences.getString("email_password", "receiver")
         return Pair(username ?: "", password ?: "")
     }
 }

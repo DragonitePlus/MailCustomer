@@ -37,15 +37,13 @@ class InboxViewModel : ViewModel() {
 
                 val props = Properties().apply {
                     put("mail.store.protocol", "pop3")
-                    put("mail.pop3.host", "pop.163.com")
-                    put("mail.pop3.port", "995")
-                    put("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
-                    put("mail.pop3.socketFactory.fallback", "false")
+                    put("mail.pop3.host", "10.0.2.2")
+                    put("mail.pop3.port", "1110")
                 }
 
                 val session = Session.getInstance(props, null)
                 val store = session.getStore("pop3")
-                store.connect("pop.163.com", username, password)
+                store.connect("10.0.2.2", username, password)
 
                 val inbox = store.getFolder("INBOX")
                 inbox.open(Folder.READ_ONLY)
