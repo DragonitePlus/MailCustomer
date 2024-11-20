@@ -3,53 +3,97 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-            <!-- 顶栏 -->
+    android:orientation="vertical"
+    android:background="@color/md_theme_background">
+
+    <!-- 顶栏 -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/cardview_dark_background"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/md_theme_primary"
         app:title="登录"
         app:titleTextColor="@android:color/white"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:navigationIcon="@drawable/ic_arrow_back" />
+
+    <!-- 主内容 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="16dp">
+        android:padding="16dp">
 
-
-        <EditText
-            android:id="@+id/username"
+        <!-- 用户名输入框 -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"
-            android:inputType="text" />
+            android:layout_marginTop="8dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/md_theme_secondary"
+            app:hintTextColor="@color/md_theme_secondary">
 
-        <EditText
-            android:id="@+id/password"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="请输入用户名"
+                android:inputType="text"
+                android:textColor="@android:color/black" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 密码输入框 -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword" />
+            android:layout_marginTop="16dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/md_theme_secondary"
+            app:hintTextColor="@color/md_theme_secondary">
 
-        <Button
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="请输入密码"
+                android:inputType="textPassword"
+                android:textColor="@android:color/black" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- FancyButton - 登录 -->
+        <mehdi.sakout.fancybuttons.FancyButton
             android:id="@+id/loginButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="24dp"
+            android:text="登录"
+            android:textSize="22sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center"
+            app:fb_defaultColor="@color/md_theme_secondary"
+            app:fb_focusColor="@color/md_theme_secondaryContainer"
+            app:fb_radius="16dp"
+            app:fb_textColor="@android:color/white"
+            app:fb_borderWidth="0dp"
+            app:fb_iconPosition="left" />
 
-        <Button
+        <!-- FancyButton - 注册 -->
+        <mehdi.sakout.fancybuttons.FancyButton
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Register"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp" />
-
+            android:layout_marginTop="16dp"
+            android:text="注册"
+            android:textSize="22sp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center"
+            app:fb_defaultColor="@color/md_theme_secondaryContainer"
+            app:fb_focusColor="@color/md_theme_secondary"
+            app:fb_radius="16dp"
+            app:fb_textColor="@color/md_theme_primary"
+            app:fb_borderColor="@color/md_theme_secondary"
+            app:fb_borderWidth="2dp"
+            app:fb_iconPosition="left" />
     </LinearLayout>
-
 </LinearLayout>

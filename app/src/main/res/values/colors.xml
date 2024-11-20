@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="primaryColor">#FFFFFFFF</color>
     <color name="primaryDarkColor">#0000FF</color>
+    <color name="soft_gray">#F5F5F5</color>
+    <color name="md_theme_onBackground">#000000</color>
 </resources>

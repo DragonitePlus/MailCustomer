@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 次颜色 -->
+    <color name="md_theme_secondary">#3F51B5</color> <!-- 浅蓝色，用于输入框和按钮 -->
+
+    <!-- 背景颜色 -->
+    <color name="md_theme_background">#F5F5F5</color> <!-- 浅灰色背景 -->
+
+    <!-- 次颜色容器（交互状态） -->
+    <color name="md_theme_secondaryContainer">#FFFFFF</color> <!-- 更亮的浅蓝色，用于按钮聚焦 -->
+
+    <!-- 输入框提示文字 -->
+    <color name="md_theme_on_surface">#9E9E9E</color> <!-- 灰色提示文字 -->
+
+    <!-- 错误颜色 -->
+    <color name="md_theme_error">#FF6D6D</color> <!-- 红色错误提示 -->
+
+    <!-- 字体颜色 -->
+    <color name="md_theme_on_primary">#FFFFFF</color> <!-- 按钮白色文字 -->
+    <color name="md_theme_primary">#3F51B5</color> <!-- 注册按钮蓝色文字 -->
+</resources>

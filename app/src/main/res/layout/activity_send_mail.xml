@@ -1,69 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    tools:context="com.example.mailCustomer.SendMailActivity">
 
     <!-- 顶栏 -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_dark_background"
+        android:background="@color/md_theme_primary"
         android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar.Primary"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="发送邮件" />
 
+    <!-- 邮件表单内容 -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="16dp">
+
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="597dp"
+        android:layout_gravity="center"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <EditText
-            android:id="@+id/senderEmail"
+        <!-- 发送方邮箱 -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="发送方邮箱"
-            android:inputType="textEmailAddress"
-            android:editable="false"
-            android:focusable="false"
-            android:clickable="false"
-            android:longClickable="false" />
+            android:hint="发送方邮箱">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/senderEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:editable="false"
+                android:focusable="false"
+                android:inputType="textEmailAddress"
+                android:longClickable="false" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/recipientEmail"
+        <!-- 收件人邮箱 -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="收件人邮箱"
-            android:inputType="textEmailAddress" />
+            android:hint="收件人邮箱">
 
-        <EditText
-            android:id="@+id/emailTitle"
-             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="邮件标题"
-            android:inputType="textEmailAddress" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/recipientEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/emailMessage"
+        <!-- 邮件标题 -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top"
-            android:hint="邮件内容"
-            android:inputType="textMultiLine"
-            android:minHeight="200dp" />
+            android:hint="邮件标题">
 
-        <Button
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 邮件内容 -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="邮件内容">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:minHeight="200dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 发送按钮 -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/sendButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="发送邮件" />
+            android:text="发送邮件"
+            app:icon="@drawable/ic_send"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
     </LinearLayout>
 
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

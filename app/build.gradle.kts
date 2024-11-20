@@ -47,6 +47,11 @@ android {
 dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.8.9")// 或者使用最新版本
+    implementation("com.github.medyo:fancybuttons:1.9.1")
+    implementation("com.github.florent37:shapeofview:1.4.0")
+    implementation("com.github.ybq:Android-SpinKit:1.4.0")
+
+
 
     implementation(libs.squareup.okhttp)
     //邮件
@@ -65,6 +70,7 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.car.ui.lib)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.androidx.coordinatorlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

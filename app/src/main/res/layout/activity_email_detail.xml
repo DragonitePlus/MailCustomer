@@ -1,51 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <!-- 顶栏 -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_dark_background"
+        android:background="@color/md_theme_primary"
         app:title="收件箱"
         app:titleTextColor="@android:color/white"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_scrollFlags="scroll|enterAlways" />
 
+    <!-- 邮件内容 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:layout_marginTop="35dp"
+        android:layout_below="@id/toolbar">
 
+        <!-- 邮件标题 -->
         <TextView
             android:id="@+id/titleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:text="Title" />
+            android:textColor="@color/md_theme_primary"
+            android:text="Title"
+            android:layout_marginTop="8dp" />
 
+        <!-- 发件人 -->
         <TextView
             android:id="@+id/senderTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:text="Sender" />
+            android:textSize="14sp"
+            android:textColor="@color/md_theme_onBackground"
+            android:text="Sender: Example Sender"
+            android:layout_marginTop="8dp" />
 
+        <!-- 内容 -->
         <TextView
             android:id="@+id/contentTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            android:textSize="16sp"
+            android:textColor="@color/md_theme_onBackground"
+            android:text="This is the email content preview. Tap to read more."
             android:layout_marginTop="16dp"
-            android:text="Content" />
-        
-    </LinearLayout>
-</LinearLayout>
+            android:maxLines="4"
+            android:ellipsize="end" />
 
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
