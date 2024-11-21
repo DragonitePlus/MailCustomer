@@ -17,6 +17,7 @@ class HomeActivity : AppCompatActivity() {
         val sendMailBlock = findViewById<RoundRectView>(R.id.sendMailBlock)
         val personalInfo = findViewById<RoundRectView>(R.id.personalInfoBlock)
         val serverManagementBlock = findViewById<RoundRectView>(R.id.serverManagementBlock)
+        val systemLogs = findViewById<RoundRectView>(R.id.systemLogs)
         val userManagementBlock = findViewById<RoundRectView>(R.id.userManagementBlock)
 
         // 从 SharedPreferences 获取 Token
@@ -29,6 +30,7 @@ class HomeActivity : AppCompatActivity() {
         // 动态显示管理员相关模块
         if (isAdmin) {
             serverManagementBlock.visibility = View.VISIBLE
+            systemLogs.visibility = View.VISIBLE
             userManagementBlock.visibility = View.VISIBLE
         }
 
@@ -38,6 +40,7 @@ class HomeActivity : AppCompatActivity() {
             sendMailBlock to SendMailActivity::class.java,
             personalInfo to PersonalInfoActivity::class.java,
             serverManagementBlock to ServerManagementActivity::class.java,
+            systemLogs to SystemLogsActivity::class.java,
             userManagementBlock to UserManagementActivity::class.java
         )
     }
