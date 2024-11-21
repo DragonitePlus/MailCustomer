@@ -14,6 +14,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
@@ -137,7 +138,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     json.put("pop3Port", pop3Port.text.toString())
     json.put("domain", domain.text.toString())
 
-    val body = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
+    val body = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
     val request = Request.Builder()
         .url("http://10.0.2.2:8080/server/updatePorts")
         .post(body)

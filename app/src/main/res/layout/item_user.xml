@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
+
+    <!-- 顶部用户名和邮箱 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:paddingBottom="8dp">
+
+        <!-- 用户名 -->
+        <TextView
+            android:id="@+id/usernameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="用户名"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold" />
+
+        <!-- 邮箱 -->
+        <TextView
+            android:id="@+id/emailTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="邮箱"
+            android:textAppearance="?attr/textAppearanceBody2" />
+    </LinearLayout>
+
+    <!-- 状态和角色 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:paddingBottom="8dp">
+
+        <!-- 状态 -->
+        <TextView
+            android:id="@+id/statusTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="状态：active"
+            android:textAppearance="?attr/textAppearanceBody2" />
+
+        <!-- 角色 -->
+        <TextView
+            android:id="@+id/roleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="角色：user"
+            android:textAppearance="?attr/textAppearanceBody2" />
+    </LinearLayout>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:weightSum="2">
+
+        <!-- 编辑按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="编辑"
+            app:icon="@drawable/edit_24px"
+            app:iconGravity="textStart" />
+
+        <!-- 封禁/启用按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/banButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="封禁"
+            app:icon="@drawable/disabled_by_default_24px"
+            app:iconGravity="textStart" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:weightSum="2">
+
+        <!-- 设置为管理员/用户按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/setAdminButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="设置为管理员"
+            app:icon="@drawable/supervisor_account_24px"
+            app:iconGravity="textStart" />
+
+        <!-- 删除按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/deleteButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="删除"
+            app:icon="@drawable/person_remove_24px"
+            app:iconGravity="textStart" />
+    </LinearLayout>
+</LinearLayout>
+
+</LinearLayout>

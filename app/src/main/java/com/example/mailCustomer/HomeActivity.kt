@@ -12,9 +12,11 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        // 获取界面中的卡片视图
         val inboxBlock = findViewById<RoundRectView>(R.id.inboxBlock)
         val sendMailBlock = findViewById<RoundRectView>(R.id.sendMailBlock)
         val serverManagementBlock = findViewById<RoundRectView>(R.id.serverManagementBlock)
+        val userManagementBlock = findViewById<RoundRectView>(R.id.userManagementBlock)
 
         // 从 SharedPreferences 获取 Token
         val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
@@ -23,25 +25,30 @@ class HomeActivity : AppCompatActivity() {
         // 判断是否为管理员
         val isAdmin = TokenUtils.isAdminFromToken(token ?: "")
 
-        // 动态显示服务器管理模块
+        // 动态显示管理员相关模块
         if (isAdmin) {
             serverManagementBlock.visibility = View.VISIBLE
+            userManagementBlock.visibility = View.VISIBLE
         }
 
-        // 点击事件绑定
-        inboxBlock.setOnClickListener {
-            val intent = Intent(this, InboxActivity::class.java)
-            startActivity(intent)
-        }
+        // 绑定点击事件
+        setupClickListeners(
+            inboxBlock to InboxActivity::class.java,
+            sendMailBlock to SendMailActivity::class.java,
+            serverManagementBlock to ServerManagementActivity::class.java,
+            userManagementBlock to UserManagementActivity::class.java
+        )
+    }
 
-        sendMailBlock.setOnClickListener {
-            val intent = Intent(this, SendMailActivity::class.java)
-            startActivity(intent)
-        }
-
-        serverManagementBlock.setOnClickListener {
-            val intent = Intent(this, ServerManagementActivity::class.java)
-            startActivity(intent)
+    /**
+     * 封装点击事件绑定逻辑
+     */
+    private fun setupClickListeners(vararg viewsAndActivities: Pair<View, Class<*>>) {
+        for ((view, activity) in viewsAndActivities) {
+            view.setOnClickListener {
+                val intent = Intent(this, activity)
+                startActivity(intent)
+            }
         }
     }
 }
