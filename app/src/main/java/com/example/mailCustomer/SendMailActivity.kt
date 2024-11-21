@@ -71,8 +71,13 @@ class SendMailActivity : AppCompatActivity() {
         // Configure SMTP properties
         val props = Properties()
         props["mail.smtp.auth"] = "false"
-        props["mail.smtp.host"] = "10.0.2.2"
-        props["mail.smtp.port"] = "2525"
+        props["mail.smtp.host"] = getDomain()
+        props["mail.smtp.port"] = getSmtpPort().toString()
+
+
+
+        println("Host: ${getDomain()}")
+        println("Port: ${getSmtpPort()}")
 
         // Create a new coroutine to send the email
         CoroutineScope(Dispatchers.IO).launch {
@@ -144,5 +149,15 @@ class SendMailActivity : AppCompatActivity() {
         } catch (e: JsonSyntaxException) {
             emptyMap()
         }
+    }
+
+    private fun getSmtpPort(): Int {
+        val prefs = getSharedPreferences("server_config", MODE_PRIVATE)
+        return prefs.getInt("smtp_port", 2525) // 默认值为 2525
+    }
+
+    private fun getDomain(): String {
+        val prefs = getSharedPreferences("server_config", MODE_PRIVATE)
+        return prefs.getString("domain", "10.0.2.2") ?: "10.0.2.2" // 默认值为 10.0.2.2
     }
 }

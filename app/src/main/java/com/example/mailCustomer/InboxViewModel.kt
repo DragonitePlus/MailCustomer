@@ -26,12 +26,11 @@ class InboxViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    fun fetchEmails(credentials: String) {
+    fun fetchEmails(credentials: String, pop3Host: String, pop3Port: Int) {
         _isLoading.value = true
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val username = credentials
-                if (username.isEmpty()) {
+                if (credentials.isEmpty()) {
                     withContext(Dispatchers.Main) {
                         _errorMessage.value = "Email credentials not found"
                     }
@@ -40,21 +39,18 @@ class InboxViewModel : ViewModel() {
 
                 val props = Properties().apply {
                     put("mail.store.protocol", "pop3")
-                    put("mail.pop3.host", "10.0.2.2")
-                    put("mail.pop3.port", "1100")
+                    put("mail.pop3.host", pop3Host)
+                    put("mail.pop3.port", pop3Port.toString())
                 }
 
                 val session = Session.getInstance(props, null)
                 val store = session.getStore("pop3")
-                store.connect("10.0.2.2", username)
+                store.connect(pop3Host, credentials)
 
                 val inbox = store.getFolder("INBOX")
                 inbox.open(Folder.READ_ONLY)
 
                 val messages = inbox.messages
-                Log.d("InboxViewModel", "Total messages: ${messages.size}")
-                println(messages.toString())
-
                 val fetchedEmails = messages.map { message ->
                     try {
                         val sender = if (message.from != null && message.from.isNotEmpty()) {
@@ -62,15 +58,11 @@ class InboxViewModel : ViewModel() {
                         } else {
                             "sender@example.com"
                         }
-                        val title = message.subject
+                        val title = message.subject ?: "No Subject"
                         val contentPreview = extractContentPreview(message.content)
                         Email(sender, title, contentPreview)
-                    } catch (e: MessagingException) {
-                        Log.e("InboxViewModel", "Error parsing email: ${e.message}")
-                        Email("sender@example.com", "Title", "test")
-                    } catch (e: IOException) {
-                        Log.e("InboxViewModel", "IO Error: ${e.message}")
-                        Email("sender@example.com", "Title", "test")
+                    } catch (e: Exception) {
+                        Email("unknown@example.com", "Error", "Could not parse content")
                     }
                 }
 
@@ -91,49 +83,61 @@ class InboxViewModel : ViewModel() {
         }
     }
 
-    fun deleteEmail(credentials: String, emailIndex: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val username = credentials
-                if (username.isEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        _errorMessage.value = "Email credentials not found"
-                    }
-                    return@launch
-                }
+    fun deleteEmail(credentials: String, emailIndex: Int, pop3Host: String, pop3Port: Int) {
+    _isLoading.value = true
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val props = Properties().apply {
+                put("mail.store.protocol", "pop3")
+                put("mail.pop3.host", pop3Host)
+                put("mail.pop3.port", pop3Port.toString())
+            }
 
-                val props = Properties().apply {
-                    put("mail.store.protocol", "pop3")
-                    put("mail.pop3.host", "10.0.2.2")
-                    put("mail.pop3.port", "1100")
-                }
+            val session = Session.getInstance(props, null)
+            val store = session.getStore("pop3")
+            store.connect(pop3Host, credentials)
 
-                val session = Session.getInstance(props, null)
-                val store = session.getStore("pop3")
-                store.connect("10.0.2.2", username)
+            val inbox = store.getFolder("INBOX")
+            inbox.open(Folder.READ_WRITE)
 
-                val inbox = store.getFolder("INBOX")
-                inbox.open(Folder.READ_WRITE)
-
-                val message = inbox.getMessage(emailIndex + 1) // POP3索引从1开始
-                message.setFlag(Flags.Flag.DELETED, true)
-                inbox.close(true) // 关闭并删除标记的邮件
-                store.close()
-
+            // 找到指定索引的邮件
+            val messages = inbox.messages
+            if (emailIndex < 0 || emailIndex >= messages.size) {
                 withContext(Dispatchers.Main) {
-                    _emailList.value = _emailList.value?.filterIndexed { index, _ -> index != emailIndex }
+                    _errorMessage.value = "Invalid email index"
+                    _isLoading.value = false
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    _errorMessage.value = e.message ?: "An error occurred"
-                }
+                return@launch
+            }
+
+            val messageToDelete = messages[emailIndex]
+            messageToDelete.setFlag(Flags.Flag.DELETED, true)
+
+            // 关闭文件夹并保存更改
+            inbox.close(true)
+            store.close()
+
+            // 更新 UI 列表
+            val updatedEmails = _emailList.value?.toMutableList()?.apply {
+                removeAt(emailIndex)
+            } ?: emptyList()
+
+            withContext(Dispatchers.Main) {
+                _emailList.value = updatedEmails
+                _isLoading.value = false
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                _errorMessage.value = e.message ?: "An error occurred while deleting email"
+                _isLoading.value = false
             }
         }
     }
+}
+
 
     private fun extractContentPreview(content: Any): String {
-        // Truncate content to display only the first 100 characters
         return try {
             when (content) {
                 is String -> content.take(100)
@@ -141,7 +145,6 @@ class InboxViewModel : ViewModel() {
                 else -> "Unsupported content type"
             }
         } catch (e: Exception) {
-            Log.e("InboxViewModel", "Error extracting content preview: ${e.message}")
             "Error extracting content preview"
         }
     }
@@ -150,16 +153,8 @@ class InboxViewModel : ViewModel() {
         val result = StringBuilder()
         for (i in 0 until multipart.count) {
             val bodyPart = multipart.getBodyPart(i)
-            try {
-                if (bodyPart.isMimeType("text/plain")) {
-                    result.append(bodyPart.content.toString())
-                } else if (bodyPart.content is javax.mail.Multipart) {
-                    result.append(extractTextFromMimeMultipart(bodyPart.content as javax.mail.Multipart))
-                }
-            } catch (e: MessagingException) {
-                Log.e("InboxViewModel", "Error extracting text from MIME multipart: ${e.message}")
-            } catch (e: IOException) {
-                Log.e("InboxViewModel", "IO Error extracting text from MIME multipart: ${e.message}")
+            if (bodyPart.isMimeType("text/plain")) {
+                result.append(bodyPart.content.toString())
             }
         }
         return result.toString()
@@ -170,8 +165,12 @@ class InboxViewModel : ViewModel() {
             val internetAddress = InternetAddress(sender)
             internetAddress.address ?: "Unknown"
         } catch (e: Exception) {
-            Log.e("InboxViewModel", "Error parsing sender address: ${e.message}")
             "Unknown"
         }
     }
+
+
+
 }
+
+

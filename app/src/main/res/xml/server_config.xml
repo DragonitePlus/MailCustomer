@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="smtp_port">2525</integer>
+    <integer name="pop3_port">1100</integer>
+    <string name="domain">10.0.2.2</string>
+</resources>

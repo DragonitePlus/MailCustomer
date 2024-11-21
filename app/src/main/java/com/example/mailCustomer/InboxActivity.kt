@@ -8,7 +8,6 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailcostomer.R
@@ -19,7 +18,7 @@ class InboxActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private val emailAdapter = EmailAdapter(
         emptyList(),
-        onClick =  { email -> fetchEmailContentAndOpenDetail(email) },
+        onClick = { email -> fetchEmailContentAndOpenDetail(email) },
         onDelete = { email -> deleteEmail(email) }
     )
     private val viewModel: InboxViewModel by viewModels()
@@ -35,47 +34,49 @@ class InboxActivity : AppCompatActivity() {
         recyclerView.adapter = emailAdapter
 
         toolbar.setNavigationOnClickListener {
-            finish() // 返回上一页面
+            finish()
         }
 
         observeViewModel()
-        viewModel.fetchEmails(getEmailCredentials())
+
+        // Fetch POP3 host and port from SharedPreferences
+        val sharedPreferences = getSharedPreferences("server_config", Context.MODE_PRIVATE)
+        val pop3Host = sharedPreferences.getString("domain", "10.0.2.2") ?: "10.0.2.2"
+        val pop3Port = sharedPreferences.getInt("pop3_port", 1100)
+
+        viewModel.fetchEmails(getEmailCredentials(), pop3Host, pop3Port)
     }
 
     private fun observeViewModel() {
-        viewModel.emailList.observe(this, Observer { emails ->
-            if (emails.isNotEmpty()) {
-                emailAdapter.updateEmails(emails)
-                progressBar.visibility = View.GONE
-            } else {
-                Toast.makeText(this, "No emails found", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        viewModel.isLoading.observe(this, Observer { isLoading ->
+        viewModel.emailList.observe(this) { emails ->
+            emailAdapter.updateEmails(emails)
+        }
+        viewModel.isLoading.observe(this) { isLoading ->
             progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        })
-
-        viewModel.errorMessage.observe(this, Observer { error ->
+        }
+        viewModel.errorMessage.observe(this) { error ->
             if (error.isNotEmpty()) {
-                Toast.makeText(this, "Error: $error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 
     private fun fetchEmailContentAndOpenDetail(email: Email) {
         val intent = Intent(this, EmailDetailActivity::class.java).apply {
-        putExtra("email_sender", email.sender)
-        putExtra("email_title", email.title)
-        putExtra("email_content", email.content)
-    }
-    startActivity(intent)
+            putExtra("email_sender", email.sender)
+            putExtra("email_title", email.title)
+            putExtra("email_content", email.content)
+        }
+        startActivity(intent)
     }
 
     private fun deleteEmail(email: Email) {
         val emailIndex = viewModel.emailList.value?.indexOf(email)
         if (emailIndex != null && emailIndex >= 0) {
-            viewModel.deleteEmail(getEmailCredentials(), emailIndex)
+            val sharedPreferences = getSharedPreferences("server_config", Context.MODE_PRIVATE)
+            val pop3Host = sharedPreferences.getString("domain", "10.0.2.2") ?: "10.0.2.2"
+            val pop3Port = sharedPreferences.getInt("pop3_port", 1100)
+            viewModel.deleteEmail(getEmailCredentials(), emailIndex, pop3Host, pop3Port)
         } else {
             Toast.makeText(this, "Email not found", Toast.LENGTH_SHORT).show()
         }
@@ -83,8 +84,12 @@ class InboxActivity : AppCompatActivity() {
 
     private fun getEmailCredentials(): String {
         val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString("email_username", "receiver@example.com")
-        return username ?: ""
+        return sharedPreferences.getString("email_username", "") ?: ""
     }
 }
-data class Email(val sender: String, val title: String, val content: String)
+
+data class Email(
+    val sender: String,
+    val title: String,
+    val content: String
+)
