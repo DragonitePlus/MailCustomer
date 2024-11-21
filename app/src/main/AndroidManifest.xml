@@ -29,6 +29,7 @@
         <activity android:name="com.example.mailCustomer.EmailDetailActivity" />
         <activity android:name="com.example.mailCustomer.ServerManagementActivity" />
         <activity android:name="com.example.mailCustomer.UserManagementActivity" />
+        <activity android:name="com.example.mailCustomer.PersonalInfoActivity" />
     </application>
 
 </manifest>

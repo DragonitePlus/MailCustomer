@@ -15,6 +15,7 @@ class HomeActivity : AppCompatActivity() {
         // 获取界面中的卡片视图
         val inboxBlock = findViewById<RoundRectView>(R.id.inboxBlock)
         val sendMailBlock = findViewById<RoundRectView>(R.id.sendMailBlock)
+        val personalInfo = findViewById<RoundRectView>(R.id.personalInfoBlock)
         val serverManagementBlock = findViewById<RoundRectView>(R.id.serverManagementBlock)
         val userManagementBlock = findViewById<RoundRectView>(R.id.userManagementBlock)
 
@@ -35,6 +36,7 @@ class HomeActivity : AppCompatActivity() {
         setupClickListeners(
             inboxBlock to InboxActivity::class.java,
             sendMailBlock to SendMailActivity::class.java,
+            personalInfo to PersonalInfoActivity::class.java,
             serverManagementBlock to ServerManagementActivity::class.java,
             userManagementBlock to UserManagementActivity::class.java
         )
