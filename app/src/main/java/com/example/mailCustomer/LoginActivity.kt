@@ -1,21 +1,22 @@
 package com.example.mailCustomer
 
+import TokenUtils
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mailcostomer.R
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import mehdi.sakout.fancybuttons.FancyButton
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -94,8 +95,7 @@ class LoginActivity : AppCompatActivity() {
                                         val token = jsonObject.getString("token")
 
                                         // 解码token以获取username
-                                        val decodedToken = decodeToken(token)
-                                        val username = decodedToken?.get("sub") as? String
+                                        val username = TokenUtils.getUsernameFromToken(token)
 
                                         // Save token and username to SharedPreferences
                                         val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -137,34 +137,5 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         })
-    }
-
-    // 解码token的辅助函数
-    private fun decodeToken(token: String): Map<String, Any>? {
-        try {
-            val parts = token.split("\\.".toRegex())
-            if (parts.size != 3) {
-                return null
-            }
-
-            val payload = parts[1]
-            val decodedBytes = Base64.decode(payload, Base64.URL_SAFE)
-            val decodedString = String(decodedBytes, Charsets.UTF_8)
-
-            return jsonToMap(decodedString)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
-    }
-
-    // 将JSON字符串转换为Map的辅助函数
-    private fun jsonToMap(jsonString: String): Map<String, Any> {
-        return try {
-            val mapType = object : TypeToken<Map<String, Any>>() {}.type
-            Gson().fromJson(jsonString, mapType)
-        } catch (e: JsonSyntaxException) {
-            emptyMap()
-        }
     }
 }

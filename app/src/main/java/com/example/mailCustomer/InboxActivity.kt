@@ -17,7 +17,11 @@ import com.google.android.material.appbar.MaterialToolbar
 class InboxActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
-    private val emailAdapter = EmailAdapter(emptyList()) { email -> fetchEmailContentAndOpenDetail(email) }
+    private val emailAdapter = EmailAdapter(
+        emptyList(),
+        onClick =  { email -> fetchEmailContentAndOpenDetail(email) },
+        onDelete = { email -> deleteEmail(email) }
+    )
     private val viewModel: InboxViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +70,15 @@ class InboxActivity : AppCompatActivity() {
         putExtra("email_content", email.content)
     }
     startActivity(intent)
+    }
+
+    private fun deleteEmail(email: Email) {
+        val emailIndex = viewModel.emailList.value?.indexOf(email)
+        if (emailIndex != null && emailIndex >= 0) {
+            viewModel.deleteEmail(getEmailCredentials(), emailIndex)
+        } else {
+            Toast.makeText(this, "Email not found", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun getEmailCredentials(): String {

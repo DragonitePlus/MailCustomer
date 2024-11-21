@@ -51,8 +51,6 @@ dependencies {
     implementation("com.github.florent37:shapeofview:1.4.0")
     implementation("com.github.ybq:Android-SpinKit:1.4.0")
 
-
-
     implementation(libs.squareup.okhttp)
     //邮件
     implementation(libs.android.mail)

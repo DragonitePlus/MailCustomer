@@ -32,7 +32,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
 
             <ImageView
                 android:layout_width="20dp"
@@ -50,5 +51,20 @@
                 android:textColor="@color/md_theme_onBackground" />
         </LinearLayout>
 
+        <!-- 删除按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:backgroundTint="@color/md_theme_error"
+            android:text="删除"
+            android:textColor="@color/md_theme_background"
+            android:textSize="14sp"
+            android:icon="@drawable/delete"
+            android:paddingVertical="8dp"
+            app:cornerRadius="8dp" />
+
     </LinearLayout>
+
 </com.google.android.material.card.MaterialCardView>

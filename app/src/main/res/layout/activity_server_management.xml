@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_theme_background">
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+                <!-- 顶栏 -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/md_theme_primary"
+        app:title="服务器管理"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+                 <!-- SMTP Port -->
+        <com.github.florent37.shapeofview.shapes.RoundRectView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:shape_roundRect_bottomLeftRadius="8dp"
+            app:shape_roundRect_bottomRightRadius="8dp"
+            app:shape_roundRect_topLeftRadius="8dp"
+            app:shape_roundRect_topRightRadius="8dp"
+            android:padding="12dp">
+
+            <EditText
+                android:id="@+id/smtpPort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="SMTP 端口 (默认 25)"
+                android:inputType="number"
+                android:padding="8dp"
+                android:textColor="@color/md_theme_on_surface" />
+        </com.github.florent37.shapeofview.shapes.RoundRectView>
+
+        <!-- POP3 Port -->
+        <com.github.florent37.shapeofview.shapes.RoundRectView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:shape_roundRect_bottomLeftRadius="8dp"
+            app:shape_roundRect_bottomRightRadius="8dp"
+            app:shape_roundRect_topLeftRadius="8dp"
+            app:shape_roundRect_topRightRadius="8dp"
+            android:padding="12dp">
+
+            <EditText
+                android:id="@+id/pop3Port"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="POP3 端口 (默认 110)"
+                android:inputType="number"
+                android:padding="8dp"
+                android:textColor="@color/md_theme_on_surface" />
+        </com.github.florent37.shapeofview.shapes.RoundRectView>
+
+        <!-- Domain -->
+        <com.github.florent37.shapeofview.shapes.RoundRectView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:shape_roundRect_bottomLeftRadius="8dp"
+            app:shape_roundRect_bottomRightRadius="8dp"
+            app:shape_roundRect_topLeftRadius="8dp"
+            app:shape_roundRect_topRightRadius="8dp"
+            android:padding="12dp">
+
+            <EditText
+                android:id="@+id/domain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="服务器域名 (默认 test.com)"
+                android:inputType="text"
+                android:padding="8dp"
+                android:textColor="@color/md_theme_on_surface" />
+        </com.github.florent37.shapeofview.shapes.RoundRectView>
+
+
+                    <!-- Save Button -->
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="保存"
+            android:background="@color/md_theme_secondary"
+            android:textColor="@android:color/white"
+            android:padding="12dp" />
+
+
+            <!-- SMTP 控制按钮 -->
+<Button
+    android:id="@+id/smtpControlButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:text="关闭 SMTP 服务器"
+    android:background="@color/md_theme_secondary"
+    android:textColor="@android:color/white" />
+
+<!-- POP3 控制按钮 -->
+<Button
+    android:id="@+id/pop3ControlButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:text="关闭 POP3 服务器"
+    android:background="@color/md_theme_secondary"
+    android:textColor="@android:color/white" />
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
