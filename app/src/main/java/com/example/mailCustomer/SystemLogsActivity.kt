@@ -1,11 +1,13 @@
 package com.example.mailCustomer
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailcostomer.R
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.*
@@ -19,6 +21,7 @@ class SystemLogsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_system_logs)
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
 
         // 初始化 RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
@@ -30,6 +33,10 @@ class SystemLogsActivity : AppCompatActivity() {
 
         // 获取系统公告数据
         fetchLogs()
+
+        toolbar.setNavigationOnClickListener {
+            finish() // 返回上一页面
+        }
     }
 
     private fun fetchLogs() {
@@ -52,6 +59,11 @@ class SystemLogsActivity : AppCompatActivity() {
                     response.body?.string()?.let { json ->
                         val logListType = object : TypeToken<List<LogItem>>() {}.type
                         val logs: List<LogItem> = Gson().fromJson(json, logListType)
+
+                                       // 打印日志
+               logs.forEach { logItem ->
+                   Log.d("SystemLogsActivity", "LogItem: title=${logItem.type}, content=${logItem.content}, timestamp=${logItem.createdTime}")
+               }
 
                         runOnUiThread {
                             logAdapter.updateLogs(logs)

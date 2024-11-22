@@ -2,7 +2,7 @@ package com.example.mailCustomer
 
 data class LogItem(
     val id: Int,
-    val title: String,
+    val type: String,
     val content: String,
-    val timestamp: String
+    val createdTime: String
 )

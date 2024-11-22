@@ -17,7 +17,8 @@
             android:layout_height="wrap_content"
             android:text="公告标题"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@android:color/black"/>
 
         <TextView
             android:id="@+id/logContent"
@@ -25,7 +26,8 @@
             android:layout_height="wrap_content"
             android:text="公告内容"
             android:layout_marginTop="4dp"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"/>
 
         <TextView
             android:id="@+id/logTimestamp"
@@ -34,6 +36,6 @@
             android:text="时间戳"
             android:layout_marginTop="4dp"
             android:textSize="12sp"
-            android:textColor="@android:color/darker_gray" />
+            android:textColor="@android:color/black" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
