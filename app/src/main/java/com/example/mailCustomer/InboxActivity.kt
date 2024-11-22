@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailcostomer.R
@@ -21,7 +21,8 @@ class InboxActivity : AppCompatActivity() {
         onClick = { email -> fetchEmailContentAndOpenDetail(email) },
         onDelete = { email -> deleteEmail(email) }
     )
-    private val viewModel: InboxViewModel by viewModels()
+
+    private lateinit var viewModel: InboxViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +38,12 @@ class InboxActivity : AppCompatActivity() {
             finish()
         }
 
+        // 初始化 ViewModel
+        viewModel = ViewModelProvider(
+            this,
+            InboxViewModelFactory(application)
+        )[InboxViewModel::class.java]
+
         observeViewModel()
 
         // Fetch POP3 host and port from SharedPreferences
@@ -44,7 +51,7 @@ class InboxActivity : AppCompatActivity() {
         val pop3Host = sharedPreferences.getString("domain", "10.0.2.2") ?: "10.0.2.2"
         val pop3Port = sharedPreferences.getInt("pop3_port", 1100)
 
-        viewModel.fetchEmails(getEmailCredentials(), pop3Host, pop3Port)
+        viewModel.fetchEmails(pop3Host, pop3Port)
     }
 
     private fun observeViewModel() {
@@ -76,7 +83,7 @@ class InboxActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("server_config", Context.MODE_PRIVATE)
             val pop3Host = sharedPreferences.getString("domain", "10.0.2.2") ?: "10.0.2.2"
             val pop3Port = sharedPreferences.getInt("pop3_port", 1100)
-            viewModel.deleteEmail(getEmailCredentials(), emailIndex, pop3Host, pop3Port)
+            viewModel.deleteEmail(emailIndex, pop3Host, pop3Port)
         } else {
             Toast.makeText(this, "Email not found", Toast.LENGTH_SHORT).show()
         }
@@ -88,8 +95,3 @@ class InboxActivity : AppCompatActivity() {
     }
 }
 
-data class Email(
-    val sender: String,
-    val title: String,
-    val content: String
-)

@@ -16,6 +16,7 @@ class HomeActivity : AppCompatActivity() {
         val inboxBlock = findViewById<RoundRectView>(R.id.inboxBlock)
         val sendMailBlock = findViewById<RoundRectView>(R.id.sendMailBlock)
         val personalInfo = findViewById<RoundRectView>(R.id.personalInfoBlock)
+        val mailBoxManagementBlock = findViewById<RoundRectView>(R.id.mailBoxManagementBlock)
         val serverManagementBlock = findViewById<RoundRectView>(R.id.serverManagementBlock)
         val systemLogs = findViewById<RoundRectView>(R.id.systemLogs)
         val userManagementBlock = findViewById<RoundRectView>(R.id.userManagementBlock)
@@ -39,6 +40,7 @@ class HomeActivity : AppCompatActivity() {
             inboxBlock to InboxActivity::class.java,
             sendMailBlock to SendMailActivity::class.java,
             personalInfo to PersonalInfoActivity::class.java,
+            mailBoxManagementBlock to MailBoxManagementActivity::class.java,
             serverManagementBlock to ServerManagementActivity::class.java,
             systemLogs to SystemLogsActivity::class.java,
             userManagementBlock to UserManagementActivity::class.java

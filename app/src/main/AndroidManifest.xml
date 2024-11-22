@@ -31,6 +31,7 @@
         <activity android:name="com.example.mailCustomer.UserManagementActivity" />
         <activity android:name="com.example.mailCustomer.PersonalInfoActivity" />
         <activity android:name="com.example.mailCustomer.SystemLogsActivity" />
+        <activity android:name="com.example.mailCustomer.MailBoxManagementActivity" />
     </application>
 
 </manifest>
