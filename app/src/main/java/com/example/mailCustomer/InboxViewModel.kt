@@ -17,7 +17,6 @@ import javax.mail.Folder
 import javax.mail.Session
 import javax.mail.internet.InternetAddress
 
-
 class InboxViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences: SharedPreferences =
         application.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -31,7 +30,22 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    // 使用 Application 或 SharedPreferences 中的配置来获取邮件账户凭据
+    // 获取最大邮箱大小，单位：MB
+    private fun getMaxMailboxSize(): Int {
+        return sharedPreferences.getInt("maxMailboxSize", 50) // 默认为50MB
+    }
+
+    // 获取当前邮箱已使用的大小，单位：字节
+    private fun getCurrentMailboxSize(): Long {
+        return sharedPreferences.getLong("currentMailboxSize", 0L)
+    }
+
+    // 更新当前邮箱已使用的大小
+    private fun updateMailboxSize(newSize: Long) {
+        sharedPreferences.edit().putLong("currentMailboxSize", newSize).apply()
+    }
+
+    // 获取邮件凭证
     private fun getEmailCredentials(): String {
         return sharedPreferences.getString("email_username", "") ?: ""
     }
@@ -48,6 +62,9 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
                     return@launch
                 }
 
+                val maxMailboxSize = getMaxMailboxSize() * 1024 * 1024 // 最大邮箱大小（字节）
+                var currentMailboxSize = getCurrentMailboxSize() // 当前邮箱已使用大小
+
                 val props = Properties().apply {
                     put("mail.store.protocol", "pop3")
                     put("mail.pop3.host", pop3Host)
@@ -62,8 +79,13 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
                 inbox.open(Folder.READ_ONLY)
 
                 val messages = inbox.messages
-                val fetchedEmails = messages.map { message ->
-                    try {
+                val fetchedEmails = mutableListOf<Email>()
+
+                for (message in messages) {
+                    val messageSize = message.size.toLong() // 邮件大小（字节）
+
+                    // 判断当前已使用大小加上邮件大小是否超过最大限制
+                    if (currentMailboxSize + messageSize <= maxMailboxSize) {
                         val sender = if (message.from != null && message.from.isNotEmpty()) {
                             extractEmailAddress(message.from[0].toString())
                         } else {
@@ -71,11 +93,21 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
                         }
                         val title = message.subject ?: "Title"
                         val contentPreview = extractContentPreview(message.content)
-                        Email(sender, title, contentPreview)
-                    } catch (e: Exception) {
-                        Email("sender@example.com", "Title", "Content")
+
+                        // 将邮件添加到列表，并更新已使用的邮箱大小
+                        fetchedEmails.add(Email(sender, title, contentPreview))
+                        currentMailboxSize += messageSize // 累加已使用的空间
+                    } else {
+                        // 如果超过最大邮箱大小，停止下载邮件
+                        withContext(Dispatchers.Main) {
+                            _errorMessage.value = "Mailbox is full, no more emails can be downloaded"
+                        }
+                        break
                     }
                 }
+
+                // 更新当前邮箱大小
+                updateMailboxSize(currentMailboxSize)
 
                 // 过滤掉发送者是过滤账户的邮件
                 val filteredEmails = filterEmails(fetchedEmails)
@@ -99,7 +131,6 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun filterEmails(emails: List<Email>): List<Email> {
         val blockedSenders = sharedPreferences.getStringSet("blockedAccounts", emptySet())?.map { "$it@example.com" } ?: emptyList()
-        println(blockedSenders)
         return emails.filter { email ->
             email.sender !in blockedSenders
         }
@@ -122,7 +153,6 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
                 val inbox = store.getFolder("INBOX")
                 inbox.open(Folder.READ_WRITE)
 
-                // 找到指定索引的邮件
                 val messages = inbox.messages
                 if (emailIndex < 0 || emailIndex >= messages.size) {
                     withContext(Dispatchers.Main) {
@@ -135,7 +165,6 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
                 val messageToDelete = messages[emailIndex]
                 messageToDelete.setFlag(Flags.Flag.DELETED, true)
 
-                // 关闭文件夹并保存更改
                 inbox.close(true)
                 store.close()
 
@@ -190,6 +219,3 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
-
-
-

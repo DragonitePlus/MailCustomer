@@ -68,25 +68,25 @@ class SendMailActivity : AppCompatActivity() {
         println("Title: $title")
         println("Content: $content")
 
-        // Configure SMTP properties
+        // 配置 SMTP 属性
         val props = Properties()
         props["mail.smtp.auth"] = "false"
         props["mail.smtp.host"] = getDomain()
         props["mail.smtp.port"] = getSmtpPort().toString()
 
-
-
         println("Host: ${getDomain()}")
         println("Port: ${getSmtpPort()}")
 
-        // Create a new coroutine to send the email
+        // 创建一个新的协程来发送邮件
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val session = Session.getInstance(props)
 
                 val message = MimeMessage(session).apply {
                     setFrom(InternetAddress(sender))
-                    setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient))
+                    // 解析多个收件人
+                    val recipients = recipient.split(";").map { it.trim() }.filter { it.isNotEmpty() }
+                    setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients.joinToString(",")))
                     setSubject(title)
                     // 使用 setText 方法设置内容
                     setText(content, "UTF-8")
